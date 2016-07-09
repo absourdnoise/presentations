@@ -1,0 +1,73 @@
+Concurrency 
+How it runs and where to Go
+20 Jul 2016
+Tags: concurrency, scheduler, memmory model, lock-free
+
+Andrew Pogrebnoy
+Technical Lead, Admobitec Ltd.
+andrew@admobitec.com
+https://github.com/absourdnoise
+
+
+* Concurrency is not parallelism
+
+.image img/gofertines.jpg 280 680
+.image img/parallelism.jpg 200 600
+
+# Parallelism it's a simoultenisly execution of any computations
+# Concurrency independently execution of processes. And the way to compose it.
+# Concurrency is about organisation, but parallelism - execution.
+
+* Back to the roots
+
+- Context switching
+
+Kernel switches the CPU attention between processes.
+Has huge overhead, because of need to storeing/restoreing all the CPU registers for processes. Switches unpredictable (can occur at any point in a execuution).
+# TLB cache
+# Overhead of the operating system context switch, and the overhead of the scheduler function to choose the next process to occupy the CPU
+
+- Threads
+
+Threads are the same processes but share common memmory space. Easier to switches between. But still expencive.
+.image img/stack.png 250 _
+
+* Goroutines
+
+Cooperatively scheduled by runtime. Cheap to create and manage. Runtime switches at well defined points. But OS can switch threads at any time 
+
+.image img/gstack.png
+
+: For processes and threads there are `stack |guard page| heap`. But in Go goroutine start with around 2k stack on heap. And compiler insrts check in func. And if there are not enaf space, it allocates new segment, and moves contents there. So it can starts with small stack.
+
+* SCP
+
+Communicating Sequential Processes
+
+* Go memory model
+
+* Scheduler
+
+* Synchronization
+
+- Channels
+  - Channels overhead
+  - When do use channels and when muteness:
+  - https://github.com/golang/go/wiki/MutexOrChannel
+- Mutex
+- Lock-free (sync/atomic)
+- Benchmarks vs channels vs mutexes vs atomic (on metrics)
+
+* Race condition
+
+- `-race`
+- map reading race in go1.6
+
+* GC
+- Concurrent GC
+- TOC proposal
+
+* Links
+- https://talks.golang.org/2012/waza.slide
+- http://dave.cheney.net/2015/08/08/performance-without-the-event-loop
+- 
