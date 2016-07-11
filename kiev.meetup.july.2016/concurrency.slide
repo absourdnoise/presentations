@@ -18,7 +18,7 @@ https://github.com/absourdnoise
 # Concurrency independently execution of processes. And the way to compose it.
 # Concurrency is about organisation, but parallelism - execution.
 
-* Back to the roots
+* The roots
 
 - Context switching
 
@@ -34,11 +34,15 @@ Threads are the same processes but share common memmory space. Easier to switche
 
 * Goroutines
 
-Cooperatively scheduled by runtime. Cheap to create and manage. Runtime switches at well defined points. But OS can switch threads at any time 
+Cooperatively scheduled by runtime. Cheap to create and manage. Runtime switches between at well defined points. Unlike OS, that can switch threads at any time. 
 
 .image img/gstack.png
 
-: For processes and threads there are `stack |guard page| heap`. But in Go goroutine start with around 2k stack on heap. And compiler insrts check in func. And if there are not enaf space, it allocates new segment, and moves contents there. So it can starts with small stack.
+Goroutine starts with 2k stack on heap. Compiler inserts checks in every function call. And if there are not enough free space, it allocates new segment, and moves contents there.
+So it can starts with small stack. Wich in turn can even be shrinked by GC.
+
+* Scheduler
+# On each M (OS thread) thre is special gouroutine - `g0` that keeps the borders of thread stack in own stack.
 
 * SCP
 
@@ -46,13 +50,11 @@ Communicating Sequential Processes
 
 * Go memory model
 
-* Scheduler
-
 * Synchronization
 
 - Channels
   - Channels overhead
-  - When do use channels and when muteness:
+  - When should we use the channels and when the mutexes:
   - https://github.com/golang/go/wiki/MutexOrChannel
 - Mutex
 - Lock-free (sync/atomic)
@@ -70,4 +72,4 @@ Communicating Sequential Processes
 * Links
 - https://talks.golang.org/2012/waza.slide
 - http://dave.cheney.net/2015/08/08/performance-without-the-event-loop
-- 
+- Scalable Go Scheduler https://docs.google.com/document/d/1TTj4T2JO42uD5ID9e89oa0sLKhJYD0Y_kqxDv3I3XMw/edit
