@@ -1,7 +1,7 @@
 Concurrency 
 How it runs and where to Go
 20 Jul 2016
-Tags: concurrency, scheduler, memmory model, lock-free
+Tags: concurrency, scheduler, memory model, lock-free
 
 Andrew Pogrebnoy
 Technical Lead, Admobitec Ltd.
@@ -14,37 +14,37 @@ https://github.com/absourdnoise
 .image img/gofertines.jpg 280 680
 .image img/parallelism.jpg 200 600
 
-# Parallelism it's a simoultenisly execution of any computations
+# Parallelism it's a simultaneous execution of any computations
 # Concurrency independently execution of processes. And the way to compose it.
-# Concurrency is about organisation, but parallelism - execution.
+# Concurrency is about organising, but parallelism - execution.
 
 * The roots
 
 - Context switching
 
 Kernel switches the CPU attention between processes.
-Has huge overhead, because of need to storeing/restoreing all the CPU registers for processes. Switches unpredictable (can occur at any point in a execution).
+Has huge overhead, because a need of storing/restoring all the CPU registers for processes. Switches unpredictable (can occur at any point in an execution).
 # TLB cache
 # Overhead of the operating system context switch, and the overhead of the scheduler function to choose the next process to occupy the CPU
 
 - Threads
 
-Threads are the same processes but share common memmory space. Easier to switches between. But still expencive.
+Threads are the same processes but share common memory space. Easier to switches between. But still expensive.
 
 * Stack
 .image img/stack.png 550 _
 
 * Goroutines
 
-Cooperatively scheduled by runtime. Cheap to create and manage. Runtime switches between at well defined points. Unlike OS, which can switch a threads at any time. 
+Cooperatively scheduled by the runtime. Cheap to create and manage. Runtime switches between at well-defined points. Unlike OS, which can switch threads at any time. 
 
 .image img/gstack.png
 
-Goroutine starts with 2k stack on heap. Compiler inserts checks in every function call. And if there are not enough free space, it allocates new segment, and moves contents there.
-So it can starts with small stack. Wich in turn can even be shrinked by GC.
+Goroutine starts with the 2k stack on a heap. Compiler inserts check in every function call. And if there are not enough free space, it allocates new segment and moves contents there.
+So it can start with a small stack. Wich, in turn, can even be shrunk by GC.
 
 * Scheduler
-# On each M (OS thread) thre is special gouroutine - `g0` that keeps the borders of thread stack in own stack.
+# On each M (OS thread) there is special goroutine - `g0` that keeps the borders of thread stack in own stack.
 # M:N multiplexing
 .image img/sched1.png 400 _
 .caption taken from: [[https://www.goinggo.net/2015/02/scheduler-tracing-in-go.html][Scheduler Tracing In Go]]
@@ -55,10 +55,10 @@ So it can starts with small stack. Wich in turn can even be shrinked by GC.
 
 - *P* = *GOMAXPROCS*
 - *M* s can be much more than *P*
-- Work stealign
+- Work stealing
 
-# What happens on C or syscall - stack switching from goroutine stack into stack of os thread (which keeps by g0).
-# Thats why C funcs bids to the thread.
+# What happens on C or syscall - stack switching from goroutine stack into a stack of os thread (which keeps by g0).
+# That's why C funcs bids to the thread.
 # runtime.LockOSThread() / runtime.UnlockOSThread()
 
 .image img/sched2.jpg 350 _
@@ -66,26 +66,26 @@ So it can starts with small stack. Wich in turn can even be shrinked by GC.
 
 
 
-* Hapens before
+* Happens before
 
 #  !!! CSP
 
-# !!! All is goot until we have no concurrency
+# !!! All is good until we have no concurrency
 
-Compiler and processors can reorder reads and writes in single gouroutine, in case it doesn't change program behavior.
+Compiler and processors can reorder reads and writes in single goroutine, in case it doesn't change program behavior.
 # To specify the requirements of reads and writes, we define happens before, a partial order on the execution of memory operations in a Go program. If event e1 happens before event e2, then we say that e2 happens after e1. Also, if e1 does not happen before e2 and does not happen after e2, then we say that e1 and e2 happen concurrently.
 # Within a single goroutine, the happens-before order is the order expressed by the program.
 A read _r_ of a variable _v_ is allowed to observe a write _w_ to _v_ if both of the following hold:
 
-	1. `r` does not happen before `w`.
-	2. There is no other write `w` to v that happens after `w` but before `r`.
+    1. `r` does not happen before `w`.
+    2. There is no other write `w` to v that happens after `w` but before `r`.
 
 To guarantee that a read _r_ of a variable _v_ observes a particular write _w_ to _v_, ensure that _w_ is the only write _r_ is allowed to observe. That is, _r_ is guaranteed to observe w if both of the following hold:
 
-	1. `w` happens before `r`.
-	2. Any other write to the shared variable `v` either happens before `w` or after `r`.
+    1. `w` happens before `r`.
+    2. Any other write to the shared variable `v` either happens before `w` or after `r`.
 
-Both conditions equivalent if there is no concurenncy, but otherwise the second is stronger.
+Both conditions equivalent if there is no concurrency, but otherwise the second is stronger.
 
 # This pair of conditions is stronger than the first pair; it requires that there are no other writes happening concurrently with w or r.
 # Within a single goroutine, there is no concurrency, so the two definitions are equivalent.
@@ -95,7 +95,7 @@ Both conditions equivalent if there is no concurenncy, but otherwise the second 
 
 * 
 The goroutine creation happens before it's execution begins.
-But exit of a goroutine is not guaranteed to happen before any event in the program.
+But the exit of a goroutine is not guaranteed to happen before any event in the program.
 .play goroutine1.go
 the assignment to a is not followed by any synchronization event, so it is not guaranteed to be observed by any other goroutine.
 
@@ -116,7 +116,7 @@ The main method of communication between goroutines in go is a _channel_.
 - A receive from an _unbuffered_ channel happens before the send on that channel completes.
 - The closing of a channel happens before a receive that returns a zero value because the channel is closed.
 - Operations on an _unbuffered_ channels are blocking.
-- Buffered channel blocks _receiving_ when queue is empty and _sending_ when it's full.
+- Buffered channel blocks _receiving_ when a queue is empty and _sending_ when it's full.
 
 * Mutex
 - For any sync.Mutex or sync.RWMutex variable _l_ and _n_ < _m_, call _n_ of l.Unlock() happens before call _m_ of l.Lock() returns.
@@ -126,7 +126,7 @@ The main method of communication between goroutines in go is a _channel_.
 * Atomic
 
 Low-level atomic operations.
-Less comprehensive but much faster then mutexes.
+Less comprehensive but much faster than mutexes.
 
 # Benchmarks vs channels vs mutexes vs atomic (on metrics)
 
@@ -141,7 +141,7 @@ Useful in _read mostly_ cases
 * Race detector
 - A data race occurs when two goroutines access the same variable concurrently and at least one of the accesses is a write. 
 - The race detector is integrated with the go tool chain. When the -race command-line flag is set, the compiler instruments all memory accesses with code that records when and how the memory was accessed, while the runtime library watches for unsynchronized accesses to shared variables.
-- It can catch races only when they are really trigered. Make sence to run on realistic load.
+- It can catch races only when they are really triggered. Make sense to run on realistic load.
 - Based on Google's  C/C++ ThreadSanitizer runtime library.
 
 * GC
@@ -155,3 +155,4 @@ Useful in _read mostly_ cases
 - [[https://golang.org/ref/mem][Go memory model]]
 - [[https://github.com/golang/go/wiki/MutexOrChannel]]
 - [[https://github.com/google/sanitizers][ThreadSanitizer runtime library]]
+
