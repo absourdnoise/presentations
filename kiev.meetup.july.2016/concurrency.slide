@@ -49,7 +49,7 @@ So it can start with a small stack. Wich, in turn, can even be shrunk by GC.
 .image img/sched1.png 400 _
 .caption taken from: [[https://www.goinggo.net/2015/02/scheduler-tracing-in-go.html][Scheduler Tracing In Go]]
 
-*G* - gouroutine, *P* - context of execution, *M* - OS thread.
+*M* - OS thread, *P* - context of execution, *G* - gouroutine.
 
 * Scheduler
 
@@ -73,15 +73,17 @@ So it can start with a small stack. Wich, in turn, can even be shrunk by GC.
 # !!! All is good until we have no concurrency
 
 Compiler and processors can reorder reads and writes in single goroutine, in case it doesn't change program behavior.
-# To specify the requirements of reads and writes, we define happens before, a partial order on the execution of memory operations in a Go program. If event e1 happens before event e2, then we say that e2 happens after e1. Also, if e1 does not happen before e2 and does not happen after e2, then we say that e1 and e2 happen concurrently.
+# To specify the requirements of reads and writes, we define happens before, a partial order on the execution of memory operations in a Go program.
+# If event e1 happens before event e2, then we say that e2 happens after e1. Also, if e1 does not happen before e2 and does not happen after e2, 
+# then we say that e1 and e2 happen concurrently.
 # Within a single goroutine, the happens-before order is the order expressed by the program.
-A read _r_ of a variable _v_ is allowed to observe a write _w_ to _v_ if both of the following hold:
 
+- A read _r_ of a variable _v_ is allowed to observe a write _w_ to _v_ if both of the following hold:
     1. `r` does not happen before `w`.
     2. There is no other write `w` to v that happens after `w` but before `r`.
 
-To guarantee that a read _r_ of a variable _v_ observes a particular write _w_ to _v_, ensure that _w_ is the only write _r_ is allowed to observe. That is, _r_ is guaranteed to observe w if both of the following hold:
-
+- To guarantee that a read _r_ of a variable _v_ observes a particular write _w_ to _v_, ensure that _w_ is the only write _r_ is allowed to observe. 
+That is, _r_ is guaranteed to observe w if both of the following hold:
     1. `w` happens before `r`.
     2. Any other write to the shared variable `v` either happens before `w` or after `r`.
 
@@ -103,20 +105,18 @@ the assignment to a is not followed by any synchronization event, so it is not g
 
 
 * Channels
-
-So, to keep the order of execution (happens before) and serialize access to shared variables we need some instruments.
-
-The main method of communication between goroutines in go is a _channel_.
-.play goroutines2.go
-
-
-* Channels
+- The main method of communication between goroutines in go
 - Has two main operations: _send_ and _recieve_. Also, it has _close_
+- Operations on an _unbuffered_ channels are blocking.
+- Buffered channel blocks _receiving_ when a queue is empty and _sending_ when it's full.
 - A send on a channel happens before the corresponding receive from that channel completes.
 - A receive from an _unbuffered_ channel happens before the send on that channel completes.
 - The closing of a channel happens before a receive that returns a zero value because the channel is closed.
-- Operations on an _unbuffered_ channels are blocking.
-- Buffered channel blocks _receiving_ when a queue is empty and _sending_ when it's full.
+
+* Channels
+
+.play goroutines2.go
+
 
 * Mutex
 - For any sync.Mutex or sync.RWMutex variable _l_ and _n_ < _m_, call _n_ of l.Unlock() happens before call _m_ of l.Lock() returns.
@@ -133,6 +133,7 @@ Less comprehensive but much faster than mutexes.
 - Store / Add
 - Swap / CAS
 .code atomic.s
+# XCHG -  If a memory operand is referenced, the processor’s locking protocol is automatically implemented for the duration of the exchange operation, regardless of the presence or absence of the LOCK prefix or of the value of the IOPL.
 
 * Atomic
 - Value
@@ -144,15 +145,15 @@ Useful in _read mostly_ cases
 - It can catch races only when they are really triggered. Make sense to run on realistic load.
 - Based on Google's  C/C++ ThreadSanitizer runtime library.
 
-* GC
-- Concurrent GC
-- TOC proposal
+* What else
+- Concurrent GC # TOC proposal
+- Lock-free data structures
 
-* Links
+* Where to Go
 - [[https://talks.golang.org/2012/waza.slide][Concurrency is not parallelism]]
 - [[http://dave.cheney.net/2015/08/08/performance-without-the-event-loop]]
 - [[https://docs.google.com/document/d/1TTj4T2JO42uD5ID9e89oa0sLKhJYD0Y_kqxDv3I3XMw/edit][Scalable Go Scheduler]]
 - [[https://golang.org/ref/mem][Go memory model]]
 - [[https://github.com/golang/go/wiki/MutexOrChannel]]
 - [[https://github.com/google/sanitizers][ThreadSanitizer runtime library]]
-
+- [[https://golang.org/doc/articles/race_detector.html][Data Race Detector]]
