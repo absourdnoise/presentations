@@ -133,10 +133,6 @@ Less comprehensive but much faster than mutexes.
 .code atomic.s
 # XCHG -  If a memory operand is referenced, the processor’s locking protocol is automatically implemented for the duration of the exchange operation, regardless of the presence or absence of the LOCK prefix or of the value of the IOPL.
 
-* Atomic
-- Value
-Useful in _read mostly_ cases
-
 * Race detector
 - A data race occurs when two goroutines access the same variable concurrently and at least one of the accesses is a write. 
 - The race detector is integrated with the go tool chain. When the -race command-line flag is set, the compiler instruments all memory accesses with code that records when and how the memory was accessed, while the runtime library watches for unsynchronized accesses to shared variables.
