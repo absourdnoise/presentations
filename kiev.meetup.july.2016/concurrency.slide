@@ -139,6 +139,8 @@ Less comprehensive but much faster than mutexes.
 - It can catch races only when they are really triggered. Make sense to run on realistic load.
 - Based on Google's  C/C++ ThreadSanitizer runtime library.
 
+* Sync example
+
 * What else
 - Concurrent GC # TOC proposal
 - Lock-free data structures
