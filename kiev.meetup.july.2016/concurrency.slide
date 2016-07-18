@@ -152,6 +152,7 @@ In other words no other go routines can see intermediate state of an operation.
 
 * Where to Go
 - [[https://talks.golang.org/2012/waza.slide][Concurrency is not parallelism]]
+- [[http://www.gotw.ca/publications/concurrency-ddj.htm][The Free Lunch Is Over]]
 - [[http://dave.cheney.net/2015/08/08/performance-without-the-event-loop]]
 - [[https://docs.google.com/document/d/1TTj4T2JO42uD5ID9e89oa0sLKhJYD0Y_kqxDv3I3XMw/edit][Scalable Go Scheduler]]
 - [[https://golang.org/ref/mem][Go memory model]]
