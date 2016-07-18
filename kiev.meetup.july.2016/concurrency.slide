@@ -11,8 +11,8 @@ https://github.com/absourdnoise
 
 * Concurrency is not parallelism
 
-.image img/gofertines.jpg 280 680
 .image img/parallelism.jpg 200 600
+.image img/gofertines.jpg 280 680
 
 # Parallelism it's a simultaneous execution of any computations
 # Concurrency independently execution of processes. And the way to compose it.
@@ -36,12 +36,11 @@ Threads are the same processes but share common memory space. Easier to switches
 
 * Goroutines
 
-Cooperatively scheduled by the runtime. Cheap to create and manage. Runtime switches between at well-defined points. Unlike OS, which can switch threads at any time. 
 
+- Goroutine starts with the 2k stack on a heap. Compiler inserts check in every function call. And if there are not enough free space, it allocates new segment and moves contents there. So it can start with a small stack. Wich, in turn, can even be shrunk by GC.
 .image img/gstack.png
 
-Goroutine starts with the 2k stack on a heap. Compiler inserts check in every function call. And if there are not enough free space, it allocates new segment and moves contents there.
-So it can start with a small stack. Wich, in turn, can even be shrunk by GC.
+- Cooperatively scheduled by the runtime. Cheap to create and manage. Runtime switches between at well-defined points. Unlike OS, which can switch threads at any time. 
 
 * Scheduler
 # On each M (OS thread) there is special goroutine - `g0` that keeps the borders of thread stack in own stack.
@@ -82,8 +81,7 @@ Compiler and processors can reorder reads and writes in single goroutine, in cas
     1. `r` does not happen before `w`.
     2. There is no other write `w` to v that happens after `w` but before `r`.
 
-- To guarantee that a read _r_ of a variable _v_ observes a particular write _w_ to _v_, ensure that _w_ is the only write _r_ is allowed to observe. 
-That is, _r_ is guaranteed to observe w if both of the following hold:
+- To guarantee that a read _r_ of a variable _v_ observes a particular write _w_ to _v_, ensure that _w_ is the only write _r_ is allowed to observe. That is, _r_ is guaranteed to observe w if both of the following hold:
     1. `w` happens before `r`.
     2. Any other write to the shared variable `v` either happens before `w` or after `r`.
 
