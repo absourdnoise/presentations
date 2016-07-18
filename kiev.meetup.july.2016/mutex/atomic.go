@@ -16,7 +16,6 @@ func (c *Counter) Get() uint64 {
 // Add adds delta to counter value.
 func (c *Counter) Add(delta uint64) {
 	atomic.AddUint64(&c.value, delta)
-	// wg.Done()
 }
 
 // NewCounter returns new counter that satsfies Metric interface.

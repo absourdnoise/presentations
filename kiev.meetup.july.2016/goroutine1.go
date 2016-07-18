@@ -2,8 +2,13 @@ package main
 
 import "fmt"
 
+var a string
+
+func f() {
+	a = "hello"
+}
+
 func main() {
-	var a string
-	go func() { a = "hello" }()
+	go f()
 	fmt.Print(a)
 }

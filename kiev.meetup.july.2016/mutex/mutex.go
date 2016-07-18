@@ -9,16 +9,21 @@ import (
 type CounterMux struct {
 	name  string
 	value uint64
+	sync.Mutex
 }
 
 // Get returns counter value.
 func (c *CounterMux) Get() uint64 {
+	c.Lock()
+	defer c.Unlock()
 	return c.value
 }
 
 // Add adds delta to counter value.
 func (c *CounterMux) Add(delta uint64) {
+	c.Lock()
 	c.value += delta
+	c.Unlock()
 }
 
 // NewCounterMux returns new counter that satsfies Metric interface.
@@ -29,7 +34,7 @@ func NewCounterMux(name string) *CounterMux {
 var wg sync.WaitGroup
 
 func main() {
-	c := NewCounterMux("")
+	c := NewCounter("")
 	wg.Add(2)
 	go func() {
 		c.Add(14)

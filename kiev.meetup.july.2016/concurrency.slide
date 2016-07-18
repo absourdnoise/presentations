@@ -125,11 +125,9 @@ the assignment to a is not followed by any synchronization event, so it is not g
 
 * Atomic
 
-An atomic operation it is an operation that appears to the rest of the system to occur instantaneously.
-In other words no other go routines can see intermediate state of an operation.
+An atomic operation is an operation that appears to the rest of the system to occur instantaneously. In other words no other go routines can see intermediate state of an atomic operation.
 
-- Store / Add
-- Swap / CAS
+- Store, Add, Load, Swap, CAS
 - atomic.Value
 .code atomic.s
 # XCHG -  If a memory operand is referenced, the processor’s locking protocol is automatically implemented for the duration of the exchange operation, regardless of the presence or absence of the LOCK prefix or of the value of the IOPL.
@@ -147,7 +145,7 @@ In other words no other go routines can see intermediate state of an operation.
 - sync.Pool, sync.Once()
 - Dead-locks
 - Concurrency patterns
-- Concurrent GC (and TOC proposal)
+- Concurrent GC
 - Lock-free data structures
 
 * Where to Go

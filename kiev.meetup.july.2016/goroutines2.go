@@ -2,13 +2,16 @@ package main
 
 import "fmt"
 
+var a string
+var c = make(chan struct{})
+
+func f() {
+	a = "hello"
+	c <- struct{}{}
+}
+
 func main() {
-	var a string
-	c := make(chan struct{})
-	go func() {
-		a = "hello"
-		c <- struct{}{}
-	}()
+	go f()
 	<-c
 	fmt.Print(a)
 }
