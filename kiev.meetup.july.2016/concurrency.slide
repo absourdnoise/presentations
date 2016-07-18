@@ -81,7 +81,8 @@ Compiler and processors can reorder reads and writes in single goroutine, in cas
     1. `r` does not happen before `w`.
     2. There is no other write `w` to v that happens after `w` but before `r`.
 
-- To guarantee that a read _r_ of a variable _v_ observes a particular write _w_ to _v_, ensure that _w_ is the only write _r_ is allowed to observe. That is, _r_ is guaranteed to observe w if both of the following hold:
+# To guarantee that a read _r_ of a variable _v_ observes a particular write _w_ to _v_, ensure that _w_ is the only write _r_ is allowed to observe.
+- That is, _r_ is guaranteed to observe w if both of the following hold:
     1. `w` happens before `r`.
     2. Any other write to the shared variable `v` either happens before `w` or after `r`.
 
@@ -124,13 +125,12 @@ the assignment to a is not followed by any synchronization event, so it is not g
 
 * Atomic
 
-Low-level atomic operations.
-Less comprehensive but much faster than mutexes.
-
-# Benchmarks vs channels vs mutexes vs atomic (on metrics)
+An atomic operation it is an operation that appears to the rest of the system to occur instantaneously.
+In other words no other go routines can see intermediate state of an operation.
 
 - Store / Add
 - Swap / CAS
+- atomic.Value
 .code atomic.s
 # XCHG -  If a memory operand is referenced, the processor’s locking protocol is automatically implemented for the duration of the exchange operation, regardless of the presence or absence of the LOCK prefix or of the value of the IOPL.
 
@@ -143,7 +143,11 @@ Less comprehensive but much faster than mutexes.
 * Sync example
 
 * What else
-- Concurrent GC # TOC proposal
+- CSP
+- sync.Pool, sync.Once()
+- Dead-locks
+- Concurrency patterns
+- Concurrent GC (and TOC proposal)
 - Lock-free data structures
 
 * Where to Go
@@ -151,6 +155,9 @@ Less comprehensive but much faster than mutexes.
 - [[http://dave.cheney.net/2015/08/08/performance-without-the-event-loop]]
 - [[https://docs.google.com/document/d/1TTj4T2JO42uD5ID9e89oa0sLKhJYD0Y_kqxDv3I3XMw/edit][Scalable Go Scheduler]]
 - [[https://golang.org/ref/mem][Go memory model]]
+- [[https://talks.golang.org/2012/concurrency.slide][Go Concurrency Patterns]]
+- [[https://blog.golang.org/advanced-go-concurrency-patterns][Advanced Go Concurrency Patterns]]
 - [[https://github.com/golang/go/wiki/MutexOrChannel]]
 - [[https://github.com/google/sanitizers][ThreadSanitizer runtime library]]
 - [[https://golang.org/doc/articles/race_detector.html][Data Race Detector]]
+- [[http://www.1024cores.net/home/lock-free-algorithms][Lock-free Algorithms]]
