@@ -161,3 +161,4 @@ In other words no other go routines can see intermediate state of an operation.
 - [[https://github.com/google/sanitizers][ThreadSanitizer runtime library]]
 - [[https://golang.org/doc/articles/race_detector.html][Data Race Detector]]
 - [[http://www.1024cores.net/home/lock-free-algorithms][Lock-free Algorithms]]
+- [[https://www.youtube.com/watch?v=c1gO9aB9nbs][Herb Sutter's talks on lock-free]]
