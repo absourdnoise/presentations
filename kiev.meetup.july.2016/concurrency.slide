@@ -117,8 +117,9 @@ the assignment to a is not followed by any synchronization event, so it is not g
 
 
 * Mutex
+- Mutex
+- RWMutex
 - For any sync.Mutex or sync.RWMutex variable _l_ and _n_ < _m_, call _n_ of l.Unlock() happens before call _m_ of l.Lock() returns.
-- For any call to _l.RLock_ on a sync.RWMutex variable _l_, there is an _n_ such that the l.RLock happens (returns) after call _n_ to l.Unlock and the matching _l.RUnlock_ happens before call _n+1_ to _l.Lock_.
 - Mutex can be created as part of the structure 
 
 * Atomic
