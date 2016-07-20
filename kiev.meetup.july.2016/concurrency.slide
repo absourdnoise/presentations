@@ -152,7 +152,7 @@ An atomic operation is an operation that appears to the rest of the system to oc
 - [[https://talks.golang.org/2012/waza.slide][Concurrency is not parallelism]]
 - [[http://www.gotw.ca/publications/concurrency-ddj.htm][The Free Lunch Is Over]]
 - [[http://dave.cheney.net/2015/08/08/performance-without-the-event-loop]]
-- [[https://docs.google.com/document/d/1TTj4T2JO42uD5ID9e89oa0sLKhJYD0Y_kqxDv3I3XMw/edit][Scalable Go Scheduler]]
+- [[https://golang.org/s/go11sched][Go Scheduler Design Doc]]
 - [[https://golang.org/ref/mem][Go memory model]]
 - [[https://talks.golang.org/2012/concurrency.slide][Go Concurrency Patterns]]
 - [[https://blog.golang.org/advanced-go-concurrency-patterns][Advanced Go Concurrency Patterns]]
@@ -161,3 +161,4 @@ An atomic operation is an operation that appears to the rest of the system to oc
 - [[https://golang.org/doc/articles/race_detector.html][Data Race Detector]]
 - [[http://www.1024cores.net/home/lock-free-algorithms][Lock-free Algorithms]]
 - [[https://www.youtube.com/watch?v=c1gO9aB9nbs][Herb Sutter's talks on lock-free]]
+- [[https://golang.org/src/runtime/][Runtime sources]]
