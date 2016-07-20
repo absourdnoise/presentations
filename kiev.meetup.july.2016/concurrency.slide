@@ -23,7 +23,7 @@ https://github.com/absourdnoise
 - Context switching
 
 Kernel switches the CPU attention between processes.
-Has huge overhead, because a need of storing/restoring all the CPU registers for processes. Switches unpredictable (can occur at any point in an execution).
+Has huge overhead, because of need to storing/restoring all the CPU registers for processes. Switches unpredictable (can occur at any point in an execution).
 # TLB cache
 # Overhead of the operating system context switch, and the overhead of the scheduler function to choose the next process to occupy the CPU
 
