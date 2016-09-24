@@ -1,0 +1,76 @@
+SSA
+And slight dip into new backend for the Go compiler
+28 Sep 2016
+Tags: ssa, ir, compiler, cfg
+
+Andrew Pogrebnoy
+andrew@admobitec.com
+https://github.com/dAdAbird
+
+
+* Brief history of compiler
+
+- Originally written in C
+- In Go version 1.5 was translated from C to Go. There are few reasons:
+	- Concurrent GC
+	- Community
+- In Go 1.7 a new SSA backend (only for amd64)
+- Now (on tip) the other archs was moved to the new SSA backed. And the old gc is ripping out. Commit: [[https://github.com/golang/go/commit/167e381f405d36f71ef152e45bb845b866592c80][cmd/compile: make ssa compilation unconditional]]
+
+* How compiler works
+1. Lexical parsing.
+2. AST.
+3. Types checking etc.
+4. Creates intermediate representation (IR)
+5. Optimizations.
+7. IR -> Opcodes -> object file.
+8. ???
+9. PROFIT
+
+* What is an SSA
+- Static Single Assignment. Is a form of IR which requires that each variable is assigned exactly once, and every variable is defined before it is used. Actually all "variables" are immutable. Like in a functional languages.
+- Now used in GCC, HotSpot, LLVM etc.
+-  Why not to use LLVM or GCC?
+	- Compiler speed.  
+	- Runtime information. The runtime needs accurate maps of stack frames for both GC and stack copying.
+	- An additional dependence.
+
+* SSA
+Each variable is assigned exactly once. Code:
+.code ssa-intr1.go /START OMIT/,/END OMIT/
+In SSA form:
+.code ssa-intr1.go /START2 OMIT/,/END2 OMIT/
+
+* SSA φ func
+
+* Control flow graph (CFG)
+– Control enters only at beginning of sequence
+– Control leaves only at end of sequence
+.image cfg1.png 400 _
+: Dominator
+
+* SSA what it gives
+- More Optimisations:
+ - 1
+ - 2 
+ ...
+
+* SSA in Go
+The IR is pretty simple.  Here are the definitions of Value, Block, and Function.
+
+* What is done
+
+* TODO
+
+
+
+# - Brief history of the Go compiler
+# - How compiler works
+# - SSA - what is it 
+# - SSA - how it works (vars, blocks, phi functions)
+# - CFG
+# - SSA benefits
+# - SSA internal in Go
+# - Examples
+# - Current state of the SSA backend in Go
+# - Plans (TODO) for future releases
