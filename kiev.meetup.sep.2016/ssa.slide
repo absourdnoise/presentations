@@ -43,26 +43,58 @@ In SSA form:
 .code ssa-intr1.go /START2 OMIT/,/END2 OMIT/
 
 * Control flow graph (CFG)
-– Control enters only at beginning of sequence.
-– Control leaves only at end of sequence.
-.image cfg1.png 400 _
-: Dominator
+- An SSA notation is inextricably linked with the concept of Control Flow Graph (CFG).
+- In a CFG each node in the graph represents a basic block, i.e. a straight-line piece of code without any jumps.
+- Edges are used to represent control transfers (jumps).
+- Control enters only at beginning of basic block.
+- Control leaves only at end of basic block.
 
-* SSA φ func
+* CFG
+.image cfg1.png 500 _
+.caption taken from: [[https://en.wikipedia.org/wiki/Dominator_(graph_theory)][Wikipedia]]
 
-* SSA what it gives
-- More Optimisations:
- - 1
- - 2 
- ...
+* Example
+.code example.go /^func bytesEq/,/^}/
+
+* bytesEq CFG
+.image cfg-nophi.png 550 _
+
+* φ (phi) function
+.image cfg-phi.png 551 _
+
+* Dominance
+.image dom1.jpg
+
+* Dominance
+.image dom2.png 500 _
+.caption taken from: [[http://www.cs.colostate.edu/~mstrout/CS553Fall06/slides/lecture17-SSA.pdf][SSA Lectures]]
 
 * SSA in Go
 The IR is pretty simple.  Here are the definitions of Value, Block, and Function.
 
-* What is done
+* SSA what it gives
+- Better optimizations on:
+ - dead code elimination;
+ - nill check elimination;
+ - common-subexpression elimination (CSE);
+ - bounds check elimination;
+ - partial redundancy elimination;
+ - register allocation;
+- Better escape analysis.
+- There are a lot of algorithms for SSA IR optimizations.
+- It gives a faster code and smaller binaries.
 
-* TODO
+* Improvements
+.image ssabench.png 500 _
+.caption comparing tip (on March 17) relative to go1.6 
 
+* Plans (TODO) for future releases
+
+* Links
+[[https://en.wikipedia.org/wiki/Static_single_assignment_form][SSA Wikipedia]]
+[[https://docs.google.com/document/d/1szwabPJJc4J-igUZU4ZKprOrNRNJug2JPD8OYi3i1K0][SSA Proposal]]
+[[https://golang.org/src/cmd/compile/internal/ssa/][SSA compiler sources]]
+[[http://www.dcs.gla.ac.uk/~jsinger/ssa.html][SSA bibliography]]
 
 
 # - Brief history of the Go compiler

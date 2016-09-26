@@ -29,8 +29,8 @@ func bytesEq(s1, s2 []byte) bool {
 		return false
 	}
 
-	for k := range s1 {
-		if s1[k] != s2[k] {
+	for i := 0; i < len(s1); i++ {
+		if s1[i] != s2[i] {
 			return false
 		}
 	}

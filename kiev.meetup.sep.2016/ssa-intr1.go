@@ -17,12 +17,3 @@ func ex2() {
 	y2 := x2 + 4
 	// END2 OMIT
 }
-
-func phi() {
-	x := 2
-	if x < y {
-		x = y
-	} else {
-		x = 100
-	}
-}
