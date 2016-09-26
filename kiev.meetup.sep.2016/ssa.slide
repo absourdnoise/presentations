@@ -72,7 +72,7 @@ In SSA form:
 * SSA in Go
 The IR is pretty simple.  Here are the definitions of Value, Block, and Function.
 
-* SSA what it gives
+* So what it gives
 - Better optimizations on:
  - dead code elimination;
  - nill check elimination;
