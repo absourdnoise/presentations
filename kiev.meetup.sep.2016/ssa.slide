@@ -12,18 +12,19 @@ https://github.com/dAdAbird
 
 - Originally written in C
 - In Go version 1.5 was translated from C to Go. There are few reasons:
-	- Concurrent GC
-	- Community
+	- Write barriers for concurrent GC.
+	- Contiguous stacks support.
+	- Community.
 - In Go 1.7 a new SSA backend (only for amd64)
 - Now (on tip) the other archs was moved to the new SSA backed. And the old gc is ripping out. Commit: [[https://github.com/golang/go/commit/167e381f405d36f71ef152e45bb845b866592c80][cmd/compile: make ssa compilation unconditional]]
 
-* How compiler works
+* Compiler
 1. Lexical parsing.
 2. AST.
 3. Types checking etc.
 4. Creates intermediate representation (IR)
 5. Optimizations.
-7. IR -> Opcodes -> object file.
+7. IR → Opcodes → object file.
 8. ???
 9. PROFIT
 
@@ -41,13 +42,13 @@ Each variable is assigned exactly once. Code:
 In SSA form:
 .code ssa-intr1.go /START2 OMIT/,/END2 OMIT/
 
-* SSA φ func
-
 * Control flow graph (CFG)
-– Control enters only at beginning of sequence
-– Control leaves only at end of sequence
+– Control enters only at beginning of sequence.
+– Control leaves only at end of sequence.
 .image cfg1.png 400 _
 : Dominator
+
+* SSA φ func
 
 * SSA what it gives
 - More Optimisations:
