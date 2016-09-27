@@ -31,7 +31,7 @@ https://github.com/dAdAbird
 * What is an SSA
 - Static Single Assignment. Is a form of IR which requires that each variable is assigned exactly once, and every variable is defined before it is used. Actually all "variables" are immutable. Like in a functional languages.
 - Now used in GCC, HotSpot, LLVM etc.
--  Why not to use LLVM or GCC?
+-  Why not to use LLVM or GCC as backed for the Go compiler?
 	- Compiler speed.  
 	- Runtime information. The runtime needs accurate maps of stack frames for both GC and stack copying.
 	- An additional dependence.
@@ -69,9 +69,6 @@ In SSA form:
 .image dom2.png 500 _
 .caption taken from: [[http://www.cs.colostate.edu/~mstrout/CS553Fall06/slides/lecture17-SSA.pdf][SSA Lectures]]
 
-* SSA in Go
-The IR is pretty simple.  Here are the definitions of Value, Block, and Function.
-
 * So what it gives
 - Better optimizations on:
  - dead code elimination;
@@ -83,6 +80,92 @@ The IR is pretty simple.  Here are the definitions of Value, Block, and Function
 - Better escape analysis.
 - There are a lot of algorithms for SSA IR optimizations.
 - It gives a faster code and smaller binaries.
+
+* SSA in Go
+All optimizations occur within each separate function.
+
+* Base blocks:
+	type Block struct {
+		//     kind           control    successors
+		//   ------------------------------------------
+		//     Exit        return mem                []
+		//    Plain               nil            [next]
+		//       If   a boolean Value      [then, else]
+		//     Call               mem  [nopanic, panic]
+		Kind BlockKind
+
+		// Subsequent blocks, if any. The number and order depend on the block kind.
+		Succs []Edge
+
+		// Inverse of successors. The order is significant to Phi nodes in the block.
+		Preds []Edge
+
+		// A value that determines how the block is exited.
+		Control *Value
+
+		// The unordered set of Values that define the operation of this block.
+		Values []*Value
+
+		// The containing function
+		Func *Func
+		...
+	}
+
+* Edges
+	// Edge represents a CFG edge.
+	// Example edges for b branching to either c or d.
+	// (c and d have other predecessors.)
+	//   b.Succs = [{c,3}, {d,1}]
+	//   c.Preds = [?, ?, ?, {b,0}]
+	//   d.Preds = [?, {b,1}, ?]
+	// These indexes allow us to edit the CFG in constant time.
+	// In addition, it informs phi ops in degenerate cases like:
+	// b:
+	//    if k then c else c
+	// c:
+	//    v = Phi(x, y)
+	// Then the indexes tell you whether x is chosen from
+	// the if or else branch from b.
+	//   b.Succs = [{c,0},{c,1}]
+	//   c.Preds = [{b,0},{b,1}]
+	// means x is chosen if k is true.
+	type Edge struct {
+		// block edge goes to (in a Succs list) or from (in a Preds list)
+		b *Block
+		// index of reverse edge.  Invariant:
+		//   e := x.Succs[idx]
+		//   e.b.Preds[e.i] = Edge{x,idx}
+		// and similarly for predecessors.
+		i int
+	}
+
+* Value
+	type Value struct {
+		// The operation that computes this value.
+		Op Op
+
+		// The type of this value.
+		Type Type
+
+		// Auxiliary info for this value. The type of this information depends on the opcode and type.
+		// AuxInt is used for integer values, Aux is used for other values.
+		AuxInt int64
+		Aux    interface{}
+
+		// Arguments of this value
+		Args []*Value
+
+		// Containing basic block
+		Block *Block
+
+		// Source line number
+		Line int32
+
+		// Use count. Each appearance in Value.Args and Block.Control counts once.
+		Uses int32
+		...
+	}
+
 
 * Improvements
 .image ssabench.png 500 _
