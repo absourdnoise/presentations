@@ -79,7 +79,7 @@ In SSA form:
    · the order of f.Blocks is the order to emit the Blocks;
    · the order of b.Values is the order to emit the Values in each Block;
    · f has a non-nil regAlloc field;
-- SSA Compiler actually walks thru the passes one of each are required (e.g. scheduling, register allocation) and other not (e.g. common-subexpression and dead code elimination) and applies them to the function
+- SSA Compiler actually walks thru the "passes" some of each are required (e.g. scheduling, register allocation) and other not (e.g. common-subexpression and dead code elimination) and applies them to the function.
 
 * Basic blocks:
 .image block.png 500 _
