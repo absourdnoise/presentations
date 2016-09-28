@@ -82,6 +82,11 @@ In SSA form:
    · f has a non-nil regAlloc field;
 - SSA Compiler actually walks thru the "passes" some of each are required (e.g. scheduling, register allocation) and other not (e.g. common-subexpression and dead code elimination) and applies them to the function.
 
+* SSA in Go
+The SSA backend doesn't handle:
+- Inlining.
+- Escape analysis.
+
 * Basic blocks:
 .image block.png 500 _
 .caption [[https://golang.org/src/cmd/compile/internal/ssa/block.go#L10][src/cmd/compile/internal/ssa/block.go]]
@@ -112,7 +117,7 @@ In SSA form:
  - register allocation;
  ...
 - There are a lot of algorithms for SSA IR optimizations.
-- It gives a faster code and smaller binaries.
+- It gives a faster code and more compact binaries.
 
 * Improvements
 .image ssabench.png 500 _
@@ -125,3 +130,4 @@ In SSA form:
 [[https://docs.google.com/document/d/1szwabPJJc4J-igUZU4ZKprOrNRNJug2JPD8OYi3i1K0][SSA Proposal]]
 [[https://golang.org/src/cmd/compile/internal/ssa/][SSA compiler sources]]
 [[http://www.dcs.gla.ac.uk/~jsinger/ssa.html][SSA bibliography]]
+[[http://pp.info.uni-karlsruhe.de/uploads/publikationen/braun13cc.pdf][Paper: Simple and Efficient Construction of Static Single Assignment Form]]
