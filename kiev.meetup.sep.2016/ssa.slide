@@ -17,7 +17,7 @@ Slides: [[https://goo.gl/SrToLy][https://goo.gl/SrToLy]]
     - Contiguous stacks support.
     - Community.
 - In Go 1.7 a new SSA backend (only for amd64).
-- Now (on tip) the other archs was moved to the new SSA backed. And the old gc is ripping out. Commit: [[https://github.com/golang/go/commit/167e381f405d36f71ef152e45bb845b866592c80][cmd/compile: make ssa compilation unconditional]].
+- Currently (on tip) the other archs was moved to the new SSA backed. And the old gc is ripping out. Commit: [[https://github.com/golang/go/commit/167e381f405d36f71ef152e45bb845b866592c80][cmd/compile: make ssa compilation unconditional]].
 
 * Compiler
 1. Lexical analysis, parsing.
