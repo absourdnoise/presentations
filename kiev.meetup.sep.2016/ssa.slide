@@ -69,12 +69,14 @@ In SSA form:
 * Dominator, Dominance Frontier
 .image dom2.png 500 _
 .caption taken from: [[http://www.cs.colostate.edu/~mstrout/CS553Fall06/slides/lecture17-SSA.pdf][SSA Lectures]]
-
+: - The immediate dominator or idom of a node n is the unique node that strictly dominates n but does not strictly dominate any other node that strictly dominates n. Every node, except the entry node, has an immediate dominator.
+: - The dominance frontier of a node d is the set of all nodes n such that d dominates an immediate predecessor of n, but d does not strictly dominate n. It is the set of nodes where d's dominance stops.
+: - A dominator tree is a tree where each node's children are those nodes it immediately dominates. Because the immediate dominator is unique, it is a tree. The start node is the root of the tree.
 
 * SSA in Go
 - The SSA backend compiles each function independently.
 - The entities of the CFG represented as structures (Block, Value, Edge).
-- `func (fn *Node) *ssa.Func` converts AST-based IR to the SSA-based IR (makes CFG and all the stuff) for the given "like-function" AST node and then compiles this function.
+- `func buildssa(fn *Node) *ssa.Func` converts AST-based IR to the SSA-based IR (makes CFG and all the stuff) for the given "like-function" AST node and then compiles this function.
 - Compile means modifies function so that on return:
    · all Values in f map to 0 or 1 assembly instructions of the target architecture;
    · the order of f.Blocks is the order to emit the Blocks;
