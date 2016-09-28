@@ -10,31 +10,31 @@ https://github.com/dAdAbird
 
 * Brief history of compiler
 
-- Originally written in C
+- Originally written in C.
 - In Go version 1.5 was translated from C to Go. There are few reasons:
-	- Write barriers for concurrent GC.
-	- Contiguous stacks support.
-	- Community.
-- In Go 1.7 a new SSA backend (only for amd64)
-- Now (on tip) the other archs was moved to the new SSA backed. And the old gc is ripping out. Commit: [[https://github.com/golang/go/commit/167e381f405d36f71ef152e45bb845b866592c80][cmd/compile: make ssa compilation unconditional]]
+    - Write barriers for concurrent GC.
+    - Contiguous stacks support.
+    - Community.
+- In Go 1.7 a new SSA backend (only for amd64).
+- Now (on tip) the other archs was moved to the new SSA backed. And the old gc is ripping out. Commit: [[https://github.com/golang/go/commit/167e381f405d36f71ef152e45bb845b866592c80][cmd/compile: make ssa compilation unconditional]].
 
 * Compiler
-1. Lexical parsing.
-2. AST.
-3. Types checking etc.
-4. Creates intermediate representation (IR)
+1. Lexical analysis, parsing.
+2. AST building.
+3. Types checking etc (semantic analysis).
+4. Intermediate representation (IR).
 5. Optimizations.
-7. IR → Opcodes → object file.
+7. IR → Opcodes → object file (code generation).
 8. ???
 9. PROFIT
 
 * What is an SSA
-- Static Single Assignment. Is a form of IR which requires that each variable is assigned exactly once, and every variable is defined before it is used. Actually all "variables" are immutable. Like in a functional languages.
+- Static Single Assignment. Is a form of IR which requires that each variable is assigned exactly once, and every variable is defined before it is used.
 - Now used in GCC, HotSpot, LLVM etc.
--  Why not to use LLVM or GCC as backed for the Go compiler?
-	- Compiler speed.  
-	- Runtime information. The runtime needs accurate maps of stack frames for both GC and stack copying.
-	- An additional dependence.
+-  Why not use LLVM or GCC as the backend for the Go compiler?
+    - Compiler speed.  
+    - Runtime information. The runtime needs accurate maps of stack frames for both GC and stack copying.
+    - An additional dependence.
 
 * SSA
 Each variable is assigned exactly once. Code:
@@ -46,8 +46,8 @@ In SSA form:
 - An SSA notation is inextricably linked with the concept of Control Flow Graph (CFG).
 - In a CFG each node in the graph represents a basic block, i.e. a straight-line piece of code without any jumps.
 - Edges are used to represent control transfers (jumps).
-- Control enters only at beginning of basic block.
-- Control leaves only at end of basic block.
+- Control enters only at the beginning of basic block.
+- Control leaves only at the end of the basic block.
 
 * CFG
 .image cfg1.png 500 _
@@ -65,128 +65,62 @@ In SSA form:
 * Dominance
 .image dom1.jpg
 
-* Dominance
+* Dominator, Dominance Frontier
 .image dom2.png 500 _
 .caption taken from: [[http://www.cs.colostate.edu/~mstrout/CS553Fall06/slides/lecture17-SSA.pdf][SSA Lectures]]
+
+
+* SSA in Go
+- The SSA backend compiles each function independently.
+- The entities of the CFG represented as structures (Block, Value, Edge).
+- `func (fn *Node) *ssa.Func` converts AST-based IR to the SSA-based IR (makes CFG and all the stuff) for the given "like-function" AST node and then compiles this function.
+- Compile means modifies function so that on return:
+   · all Values in f map to 0 or 1 assembly instructions of the target architecture;
+   · the order of f.Blocks is the order to emit the Blocks;
+   · the order of b.Values is the order to emit the Values in each Block;
+   · f has a non-nil regAlloc field;
+- SSA Compiler actually walks thru the passes one of each are required (e.g. scheduling, register allocation) and other not (e.g. common-subexpression and dead code elimination) and applies them to the function
+
+* Basic blocks:
+.image block.png 500 _
+.caption [[https://golang.org/src/cmd/compile/internal/ssa/block.go#L10][src/cmd/compile/internal/ssa/block.go]]
+
+* Edges
+.image edge.png 500 _
+.caption [[https://golang.org/src/cmd/compile/internal/ssa/block.go#L79][src/cmd/compile/internal/ssa/block.go]]
+
+* Value
+.image value.png 500 _
+.caption [[https://golang.org/src/cmd/compile/internal/ssa/value.go][src/cmd/compile/internal/ssa/value.go]]
+
+* Func
+.image func.png 500 _
+.caption [[https://golang.org/src/cmd/compile/internal/ssa/func.go][src/cmd/compile/internal/ssa/func.go]]
+
+* Example
+    GOSSAFUNC=bytesEq go build example.go
+    open ssa.html
 
 * So what it gives
 - Better optimizations on:
  - dead code elimination;
- - nill check elimination;
+ - nil check elimination;
  - common-subexpression elimination (CSE);
  - bounds check elimination;
  - partial redundancy elimination;
  - register allocation;
-- Better escape analysis.
+ ...
 - There are a lot of algorithms for SSA IR optimizations.
 - It gives a faster code and smaller binaries.
-
-* SSA in Go
-All optimizations occur within each separate function.
-
-* Base blocks:
-	type Block struct {
-		//     kind           control    successors
-		//   ------------------------------------------
-		//     Exit        return mem                []
-		//    Plain               nil            [next]
-		//       If   a boolean Value      [then, else]
-		//     Call               mem  [nopanic, panic]
-		Kind BlockKind
-
-		// Subsequent blocks, if any. The number and order depend on the block kind.
-		Succs []Edge
-
-		// Inverse of successors. The order is significant to Phi nodes in the block.
-		Preds []Edge
-
-		// A value that determines how the block is exited.
-		Control *Value
-
-		// The unordered set of Values that define the operation of this block.
-		Values []*Value
-
-		// The containing function
-		Func *Func
-		...
-	}
-
-* Edges
-	// Edge represents a CFG edge.
-	// Example edges for b branching to either c or d.
-	// (c and d have other predecessors.)
-	//   b.Succs = [{c,3}, {d,1}]
-	//   c.Preds = [?, ?, ?, {b,0}]
-	//   d.Preds = [?, {b,1}, ?]
-	// These indexes allow us to edit the CFG in constant time.
-	// In addition, it informs phi ops in degenerate cases like:
-	// b:
-	//    if k then c else c
-	// c:
-	//    v = Phi(x, y)
-	// Then the indexes tell you whether x is chosen from
-	// the if or else branch from b.
-	//   b.Succs = [{c,0},{c,1}]
-	//   c.Preds = [{b,0},{b,1}]
-	// means x is chosen if k is true.
-	type Edge struct {
-		// block edge goes to (in a Succs list) or from (in a Preds list)
-		b *Block
-		// index of reverse edge.  Invariant:
-		//   e := x.Succs[idx]
-		//   e.b.Preds[e.i] = Edge{x,idx}
-		// and similarly for predecessors.
-		i int
-	}
-
-* Value
-	type Value struct {
-		// The operation that computes this value.
-		Op Op
-
-		// The type of this value.
-		Type Type
-
-		// Auxiliary info for this value. The type of this information depends on the opcode and type.
-		// AuxInt is used for integer values, Aux is used for other values.
-		AuxInt int64
-		Aux    interface{}
-
-		// Arguments of this value
-		Args []*Value
-
-		// Containing basic block
-		Block *Block
-
-		// Source line number
-		Line int32
-
-		// Use count. Each appearance in Value.Args and Block.Control counts once.
-		Uses int32
-		...
-	}
-
 
 * Improvements
 .image ssabench.png 500 _
 .caption comparing tip (on March 17) relative to go1.6 
 
-* Plans (TODO) for future releases
+# * Plans (TODO) for future releases
 
 * Links
 [[https://en.wikipedia.org/wiki/Static_single_assignment_form][SSA Wikipedia]]
 [[https://docs.google.com/document/d/1szwabPJJc4J-igUZU4ZKprOrNRNJug2JPD8OYi3i1K0][SSA Proposal]]
 [[https://golang.org/src/cmd/compile/internal/ssa/][SSA compiler sources]]
 [[http://www.dcs.gla.ac.uk/~jsinger/ssa.html][SSA bibliography]]
-
-
-# - Brief history of the Go compiler
-# - How compiler works
-# - SSA - what is it 
-# - SSA - how it works (vars, blocks, phi functions)
-# - CFG
-# - SSA benefits
-# - SSA internal in Go
-# - Examples
-# - Current state of the SSA backend in Go
-# - Plans (TODO) for future releases
