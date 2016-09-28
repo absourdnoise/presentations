@@ -84,8 +84,11 @@ In SSA form:
 
 * SSA in Go
 The SSA backend doesn't handle:
+
 - Inlining.
 - Escape analysis.
+
+This is done on the previous stages.  
 
 * Basic blocks:
 .image block.png 500 _
